@@ -93,26 +93,26 @@ testUtilities.runWithAllTransports(function (transport) {
         };
     });
 
-    QUnit.asyncTimeoutTest(transport + ": Ping interval stops the connection on 403's.", testUtilities.defaultTestTimeout, function (end, assert, testName) {
-        var connection = buildStatusCodeConnection("ping", 403, end, assert, testName, false);
+    //QUnit.asyncTimeoutTest(transport + ": Ping interval stops the connection on 403's.", testUtilities.defaultTestTimeout, function (end, assert, testName) {
+    //    var connection = buildStatusCodeConnection("ping", 403, end, assert, testName, false);
 
-        connection.error(function (error) {
-            assert.equal(error.message, $.signalR._.format($.signalR.resources.pingServerFailedStatusCode, 403), "Failed to ping server due to 403.");
+    //    connection.error(function (error) {
+    //        assert.equal(error.message, $.signalR._.format($.signalR.resources.pingServerFailedStatusCode, 403), "Failed to ping server due to 403.");
 
-            setTimeout(function () {
-                assert.equal(connection.state, $.signalR.connectionState.disconnected, "Connection was stopped.");
-                end();
-            }, 500);
-        });
+    //        setTimeout(function () {
+    //            assert.equal(connection.state, $.signalR.connectionState.disconnected, "Connection was stopped.");
+    //            end();
+    //        }, 500);
+    //    });
 
-        // Start the connection and ping the server every 1 second
-        connection.start({ transport: transport, pingInterval: 1000 });
+    //    // Start the connection and ping the server every 1 second
+    //    connection.start({ transport: transport, pingInterval: 1000 });
 
-        // Cleanup
-        return function () {
-            connection.stop();
-        };
-    });
+    //    // Cleanup
+    //    return function () {
+    //        connection.stop();
+    //    };
+    //});
 
     QUnit.asyncTimeoutTest(transport + ": Ping interval behaves appropriately.", testUtilities.defaultTestTimeout * 2, function (end, assert, testName) {
         var connection = testUtilities.createHubConnection(end, assert, testName, undefined, false),
