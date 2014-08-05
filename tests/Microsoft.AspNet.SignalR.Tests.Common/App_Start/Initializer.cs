@@ -43,6 +43,8 @@ namespace Microsoft.AspNet.SignalR.Tests.Common
 
                 e.SetObserved();
             };
+
+            HttpApplication.RegisterModule(typeof(PreSendRequestHeadersModule));
         }
 
         public static void Configuration(IAppBuilder app)
@@ -216,6 +218,18 @@ namespace Microsoft.AspNet.SignalR.Tests.Common
             {
                 map.MapSignalR();
             });
+        }
+
+        private class PreSendRequestHeadersModule : IHttpModule
+        {
+            public void Init(HttpApplication context)
+            {
+                context.PreSendRequestHeaders += (s, e) => { };
+            }
+
+            public void Dispose()
+            {
+            }
         }
     }
 }
