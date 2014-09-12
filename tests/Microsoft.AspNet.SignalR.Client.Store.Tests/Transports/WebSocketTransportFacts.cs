@@ -116,8 +116,8 @@ namespace Microsoft.AspNet.SignalR.Client.Transports
             });
 
             Assert.Equal(
-                ResourceUtil.GetResource("Error_TransportFailedToConnect"),
-                (await Assert.ThrowsAsync<InvalidOperationException>(
+                ResourceUtil.GetResource("Error_ConnectionCancelled"),
+                (await Assert.ThrowsAsync<OperationCanceledException>(
                     async () => await fakeWebSocketTransport.Start(fakeConnection, null, cancellationTokenSource.Token))).Message);
 
             Assert.Equal(1, fakeWebSocketTransport.GetInvocations("OnStartFailed").Count());
@@ -283,6 +283,28 @@ namespace Microsoft.AspNet.SignalR.Client.Transports
                 });
 
             var fakeWebSocketTransport = new FakeWebSocketTransport();
+
+            await fakeWebSocketTransport.Reconnect(fakeConnection, null);
+
+            Assert.Equal(0, fakeWebSocketTransport.GetInvocations("OpenWebSocket").Count());
+            Assert.Equal(0, fakeConnection.GetInvocations("Stop").Count());
+        }
+
+        [Fact]
+        public async Task ReconnectDoesNotStartNewWebSocketIfDisconnectTokenTripped()
+        {
+            var fakeConnection = new FakeConnection
+            {
+                LastActiveAt = DateTime.UtcNow,
+                ReconnectWindow = new TimeSpan(0, 0, 15),
+                Url = "http://fakeserver/",
+                State = ConnectionState.Reconnecting
+            };
+
+            var fakeWebSocketTransport = new FakeWebSocketTransport();
+
+            // this is called just to initialize disconnect token
+            var _ = fakeWebSocketTransport.Start(new FakeConnection(), string.Empty, new CancellationToken(true));
 
             await fakeWebSocketTransport.Reconnect(fakeConnection, null);
 
